@@ -12,7 +12,7 @@
 */
 #ifndef ___CAR_H
 #define ___CAR_H
-
+#define MAX_CARS 6
 typedef struct CarImp* Car;
 enum Cartype
 {

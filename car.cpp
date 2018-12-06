@@ -1,5 +1,4 @@
 #include "car.h"
-#include <stdbool.h>
 
 struct CarImp
 {
@@ -18,12 +17,11 @@ struct CarImp fiat_multipla2 = {FIAT_MULTIPLA, ORANGE, 65-0, 0.0, 0, true};
 struct CarImp jeep = {JEEP, SILVER, 80.0, 0.0, 0, true};
 struct CarImp jeep1 = {JEEP, BLACK, 80.0, 0.0, 0, true};
 
-static Car car_park[6] = {&aixam,&fiat_multipla,&fiat_multipla1,&fiat_multipla2,&jeep,&jeep1};
-
+static Car car_park[MAX_CARS] = {&aixam,&fiat_multipla,&fiat_multipla1,&fiat_multipla2,&jeep,&jeep1};
 
 Car get_car(Cartype type)
 {
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < MAX_CARS; i++) {
     if (car_park[i]->type == type && car_park[i]->is_available)
     {
       car_park[i]->is_available = false;
@@ -54,30 +52,36 @@ int get_speed(Car car)
 }
 void set_acceleration_rate(Car car, double rate)
 {
-  int counter;
-  for (int i = 0; i < 6; i++) {
-    if (car_park[i] == car)
+    if (rate > 1 && car->type == AIXAM)
     {
-      counter = i;
+      car->accelerate = 1;
     }
-  }
-    if (car_park[counter]->accelerate > 1.0)
+    else if (rate > 2.26 && car->type == FIAT_MULTIPLA)
     {
-      car_park[counter]->accelerate = 1.0;
+      car->accelerate = 2.26;
+    }
+    else if (rate > 3.14 && car->type == JEEP)
+    {
+      car->accelerate = 3.14;
+    }
+    else if (rate < -8)
+    {
+      car->accelerate = -8;
     }
     else
     {
-      car_park[counter]->accelerate = rate;  
+      car->accelerate = rate;
     }
 }
 void accelerate(Car car)
 {
-
+  car->speed = car->accelerate * 4;
 }
 void init()
 {
-  for (int i = 0; i < 6; i++) {
+  for (int i = 0; i < MAX_CARS; i++) {
     car_park[i]->is_available = true;
     car_park[i]->accelerate = 0;
+    car_park[i]->speed = 0;
   }
 }
