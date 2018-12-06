@@ -13,7 +13,7 @@ struct CarImp
 struct CarImp aixam = {AIXAM, RED, 16.0, 0.0, 0, true};
 struct CarImp fiat_multipla = {FIAT_MULTIPLA, GREEN, 65.0, 0.0, 0, true};
 struct CarImp fiat_multipla1 = {FIAT_MULTIPLA, BLUE, 65.0, 0.0, 0, true};
-struct CarImp fiat_multipla2 = {FIAT_MULTIPLA, ORANGE, 65-0, 0.0, 0, true};
+struct CarImp fiat_multipla2 = {FIAT_MULTIPLA, ORANGE, 65.0, 0.0, 0, true};
 struct CarImp jeep = {JEEP, SILVER, 80.0, 0.0, 0, true};
 struct CarImp jeep1 = {JEEP, BLACK, 80.0, 0.0, 0, true};
 
@@ -75,7 +75,10 @@ void set_acceleration_rate(Car car, double rate)
 }
 void accelerate(Car car)
 {
-  car->speed = car->accelerate * 4;
+    if (car->accelerate < 45)
+    {
+        car->speed = car->accelerate * 4;
+    }
 }
 void init()
 {

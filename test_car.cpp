@@ -260,7 +260,7 @@ TEST(accelerate_multipla_to_max_speed)
 	ASSERT_EQUALS(163, get_speed(car));
 	accelerate(car);
 	ASSERT_EQUALS(170, get_speed(car));
-	}
+}
 
 /**
 * your description:
