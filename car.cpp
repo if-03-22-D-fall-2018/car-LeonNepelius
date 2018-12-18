@@ -1,90 +1,112 @@
 #include "car.h"
 
-struct CarImp
+struct CarData
 {
-  enum Cartype type;
-  enum Color color;
-  double fill_level;
-  double accelerate;
-  int speed;
-  bool is_available;
+    enum Cartype type;
+    int max_speed;
+    double fill_level;
+    double accelerate;
+    double speed;
+    double lowest_accelerate;
+    double highest_accelerate;
 };
 
-struct CarImp aixam = {AIXAM, RED, 16.0, 0.0, 0, true};
-struct CarImp fiat_multipla = {FIAT_MULTIPLA, GREEN, 65.0, 0.0, 0, true};
-struct CarImp fiat_multipla1 = {FIAT_MULTIPLA, BLUE, 65.0, 0.0, 0, true};
-struct CarImp fiat_multipla2 = {FIAT_MULTIPLA, ORANGE, 65.0, 0.0, 0, true};
-struct CarImp jeep = {JEEP, SILVER, 80.0, 0.0, 0, true};
-struct CarImp jeep1 = {JEEP, BLACK, 80.0, 0.0, 0, true};
-
-static Car car_park[MAX_CARS] = {&aixam,&fiat_multipla,&fiat_multipla1,&fiat_multipla2,&jeep,&jeep1};
-
-Car get_car(Cartype type)
+struct CarImplementation
 {
-  for (int i = 0; i < MAX_CARS; i++) {
-    if (car_park[i]->type == type && car_park[i]->is_available)
+    enum Color color;
+    struct CarData car_data;
+    bool is_available;
+};
+
+struct CarData aixam = { AIXAM, 45, 16.0, 0.0, 0, -8.0, 1.0  };
+struct CarData fiat_multipla = { FIAT_MULTIPLA, 170, 65.0, 0.0, 0, -8.0, 2.26 };
+struct CarData jeep = { JEEP, 196, 80.0, 0.0, 0, -8.0, 3.14 };
+
+struct CarImplementation aixam1 = { RED, aixam, false };
+struct CarImplementation fiat_multipla1 = { GREEN, fiat_multipla, false };
+struct CarImplementation fiat_multipla2 = { BLUE, fiat_multipla, false };
+struct CarImplementation fiat_multipla3 = { ORANGE,fiat_multipla, false };
+struct CarImplementation jeep1 = { SILVER, jeep, false };
+struct CarImplementation jeep2 = { BLACK,  jeep, false };
+
+static Car car_park[MAX_CARS] = {&aixam1,&fiat_multipla1,&fiat_multipla2,&fiat_multipla3,&jeep1, &jeep2};
+
+void init()
+{
+    for (int i = 0; i < MAX_CARS; i++)
     {
-      car_park[i]->is_available = false;
-      return car_park[i];
+        car_park[i]->is_available = false;
+        car_park[i]->car_data.speed = 0;
+        car_park[i]->car_data.accelerate = 0;
     }
-  }
-  return 0;
+}
+
+Car get_car(enum Cartype type)
+{
+    for (int i = 0; i < MAX_CARS; i++)
+    {
+        if (car_park[i]->car_data.type == type && !car_park[i]->is_available)
+        {
+            car_park[i]->is_available = true;
+            return car_park[i];
+        }
+    }
+    return 0;
+}
+
+int get_speed(Car car)
+{
+    if (car->car_data.speed - (int)car->car_data.speed >= 0.5) {
+        return (int)car->car_data.speed + 1;
+    }
+    return (int)car->car_data.speed;
 }
 Cartype get_type(Car car)
 {
-  return car->type;
+    return car->car_data.type;
 }
 Color get_color(Car car)
 {
-  return car->color;
+    return car->color;
 }
+
 double get_fill_level(Car car)
 {
-  return car->fill_level;
+    return car->car_data.fill_level;
 }
+
 double get_acceleration_rate(Car car)
 {
-  return car->accelerate;
+    return car->car_data.accelerate;
 }
-int get_speed(Car car)
-{
-  return car->speed;
-}
+
 void set_acceleration_rate(Car car, double rate)
 {
-    if (rate > 1 && car->type == AIXAM)
+    if (rate >= car->car_data.lowest_accelerate && rate <= car->car_data.highest_accelerate)
     {
-      car->accelerate = 1;
+        car->car_data.accelerate = rate;
     }
-    else if (rate > 2.26 && car->type == FIAT_MULTIPLA)
+    else if (rate < car->car_data.lowest_accelerate)
     {
-      car->accelerate = 2.26;
-    }
-    else if (rate > 3.14 && car->type == JEEP)
-    {
-      car->accelerate = 3.14;
-    }
-    else if (rate < -8)
-    {
-      car->accelerate = -8;
+        car->car_data.accelerate = car->car_data.lowest_accelerate;
     }
     else
     {
-      car->accelerate = rate;
+        car->car_data.accelerate = car->car_data.highest_accelerate;
     }
 }
+
 void accelerate(Car car)
 {
-    if (car->accelerate < 45)
+    double speed = car->car_data.accelerate * 3.6;
+
+    if (speed + car->car_data.speed < car->car_data.max_speed)
     {
-        car->speed = car->accelerate * 4;
+        car->car_data.speed+=speed;
     }
-}
-void init()
-{
-  for (int i = 0; i < MAX_CARS; i++) {
-    car_park[i]->is_available = true;
-    car_park[i]->accelerate = 0;
-    car_park[i]->speed = 0;
-  }
+    else if (car->car_data.speed < car->car_data.max_speed)
+    {
+        speed = car->car_data.max_speed - car->car_data.speed;
+        car->car_data.speed += speed;
+    }
 }
